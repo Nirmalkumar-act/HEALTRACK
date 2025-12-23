@@ -2,36 +2,38 @@ package com.healtrack.hmsbackend.controller;
 
 import com.healtrack.hmsbackend.model.User;
 import com.healtrack.hmsbackend.service.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*")
 public class UserController {
 
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User user) {
-
-        Optional<User> loggedIn = authService.login(user);
-
-        if (loggedIn.isPresent()) {
-            return ResponseEntity.ok(loggedIn.get());
-        } else {
-            return ResponseEntity
-                    .status(401)
-                    .body("Invalid credentials");
-        }
+    public UserController(AuthService authService) {
+        this.authService = authService;
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody User user) {
+    public ResponseEntity<?> register(@RequestBody User user) {
         return ResponseEntity.ok(authService.register(user));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
+
+        User user = authService.login(
+                body.get("email"),
+                body.get("password")
+        );
+
+        if (user == null) {
+            return ResponseEntity.status(401).body("Invalid email or password");
+        }
+
+        return ResponseEntity.ok(user);
     }
 }

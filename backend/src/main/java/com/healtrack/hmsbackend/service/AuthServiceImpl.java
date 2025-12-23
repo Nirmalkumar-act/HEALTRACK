@@ -2,29 +2,26 @@ package com.healtrack.hmsbackend.service;
 
 import com.healtrack.hmsbackend.model.User;
 import com.healtrack.hmsbackend.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class AuthServiceImpl implements AuthService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Override
-    public String register(User user) {
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            return "User already exists";
-        }
-        userRepository.save(user);
-        return "Registration successful";
+    public AuthServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
-    public Optional<User> login(User user) {
-        return userRepository.findByEmail(user.getEmail())
-                .filter(u -> u.getPassword().equals(user.getPassword()));
+    public User register(User user) {
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User login(String email, String password) {
+        return userRepository.findByEmail(email)
+                .filter(u -> u.getPassword().equals(password))
+                .orElse(null);
     }
 }

@@ -15,31 +15,32 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [toast, setToast] = useState("");
 
-   const handleLogin = async (e) => {
-    e.preventDefault();
-    setToast("");
+  const handleLogin = async (e) => {
+  e.preventDefault();
+  setToast("");
 
-    try {
-      const response = await fetch(`${API_URL}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+  try {
+    const response = await fetch(`${API_URL}/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
-      if (!response.ok) {
-        const message = await response.text();
-        setToast(`❌ ${message}`);
-        return;
-      }
-
-      const user = await response.json();
-      login(user);
-      setToast("✅ Login successful!");
-      setTimeout(() => navigate("/"), 1000);
-    } catch (error) {
-      setToast("⚠️ Backend not reachable (check server)");
+    if (!response.ok) {
+      const msg = await response.text();
+      setToast(`❌ ${msg}`);
+      return;
     }
-  };
+
+    const user = await response.json();
+    login(user);
+    setToast("✅ Login successful!");
+    setTimeout(() => navigate("/"), 1000);
+
+  } catch (err) {
+    setToast("⚠️ Backend not reachable");
+  }
+};
   return (
     <div className="auth-page">
       <AnimatePresence>
