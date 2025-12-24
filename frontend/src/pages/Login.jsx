@@ -20,11 +20,14 @@ export default function Login() {
   setToast("");
 
   try {
-    const response = await fetch(`${API_URL}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+const response = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ email, password }),
+});
+
 
     if (!response.ok) {
       const msg = await response.text();
